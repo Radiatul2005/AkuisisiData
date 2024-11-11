@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -20,18 +20,18 @@ if uploaded_file is not None:
     # Menampilkan data awal
     st.write("Data Awal:", data.head())
 
-    # Cek data kosong
-    st.subheader("Cek Data Kosong")
-    st.write(data.isnull().sum())
-
-    # Button untuk menghapus baris yang mengandung data kosong
-    if st.button("Hapus Baris yang Kosong"):
-        data = data.dropna()
-        st.write("Data setelah menghapus baris yang kosong:", data.head())
-
-    # Preprocessing data
+    # Label Encoding untuk kolom kategori (contoh: Heart Disease)
+    st.subheader("Preprocessing Data")
     label_encoder = LabelEncoder()
-    data['Heart Disease'] = label_encoder.fit_transform(data['Heart Disease'])
+    if 'Heart Disease' in data.columns:
+        data['Heart Disease'] = label_encoder.fit_transform(data['Heart Disease'])
+    
+    # Normalisasi Fitur Numerik
+    st.write("Normalisasi Fitur Numerik")
+    numeric_cols = data.select_dtypes(include=['int64', 'float64']).columns
+    scaler = MinMaxScaler()
+    data[numeric_cols] = scaler.fit_transform(data[numeric_cols])
+    st.write("Data setelah normalisasi:", data.head())
 
     # Pisahkan fitur (X) dan label (y)
     X = data.drop(columns=['Heart Disease'])
