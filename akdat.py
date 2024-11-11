@@ -53,16 +53,29 @@ if uploaded_file is not None:
 
     # Visualisasi Data
     comparison_var = st.selectbox("Pilih variabel yang ingin dibandingkan dengan 'Heart Disease':", options=X.columns.tolist())
+    chart_type = st.selectbox("Pilih tipe grafik:", ["Line Chart", "Histogram"])
 
     if comparison_var in data.columns:
         st.subheader(f"Perbandingan {comparison_var} Berdasarkan Penyakit Jantung")
+
+        # Visualisasi data berdasarkan pilihan grafik
         plt.figure(figsize=(12, 6))
-        aggregated_data = data.groupby([comparison_var, 'Heart Disease']).size().reset_index(name='count')
-        sns.lineplot(data=aggregated_data, x=comparison_var, y='count', hue='Heart Disease', marker='o')
-        plt.title(f"Comparison of '{comparison_var}' Based on Heart Disease")
-        plt.xlabel(comparison_var.capitalize())
-        plt.ylabel(f"Jumlah Pasien Berdasarkan {comparison_var.capitalize()}")
-        plt.legend(title="Heart Disease")
+        
+        if chart_type == "Line Chart":
+            aggregated_data = data.groupby([comparison_var, 'Heart Disease']).size().reset_index(name='count')
+            sns.lineplot(data=aggregated_data, x=comparison_var, y='count', hue='Heart Disease', marker='o')
+            plt.title(f"Comparison of '{comparison_var}' Based on Heart Disease")
+            plt.xlabel(comparison_var.capitalize())
+            plt.ylabel(f"Jumlah Pasien Berdasarkan {comparison_var.capitalize()}")
+            plt.legend(title="Heart Disease")
+        
+        elif chart_type == "Histogram":
+            sns.histplot(data=data, x=comparison_var, hue="Heart Disease", multiple="stack", bins=20)
+            plt.title(f"Distribution of '{comparison_var}' Based on Heart Disease")
+            plt.xlabel(comparison_var.capitalize())
+            plt.ylabel("Count")
+            plt.legend(title="Heart Disease")
+        
         plt.tight_layout()
         st.pyplot(plt)
 
