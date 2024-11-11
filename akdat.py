@@ -26,12 +26,19 @@ if uploaded_file is not None:
     if 'Heart Disease' in data.columns:
         data['Heart Disease'] = label_encoder.fit_transform(data['Heart Disease'])
     
-    # Normalisasi Fitur Numerik
-    st.write("Normalisasi Fitur Numerik")
+    # Pilihan untuk Normalisasi
+    st.write("Pilih kolom untuk normalisasi:")
     numeric_cols = data.select_dtypes(include=['int64', 'float64']).columns
-    scaler = MinMaxScaler()
-    data[numeric_cols] = scaler.fit_transform(data[numeric_cols])
-    st.write("Data setelah normalisasi:", data.head())
+    cols_to_normalize = st.multiselect("Kolom Fitur Numerik:", numeric_cols)
+
+    # Normalisasi hanya jika ada kolom yang dipilih
+    if cols_to_normalize:
+        st.write(f"Melakukan normalisasi pada kolom: {cols_to_normalize}")
+        scaler = MinMaxScaler()
+        data[cols_to_normalize] = scaler.fit_transform(data[cols_to_normalize])
+        st.write("Data setelah normalisasi:", data.head())
+    else:
+        st.write("Tidak ada kolom yang dipilih untuk normalisasi.")
 
     # Pisahkan fitur (X) dan label (y)
     X = data.drop(columns=['Heart Disease'])
