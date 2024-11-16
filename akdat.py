@@ -3,8 +3,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Title and Description
 st.title("Aplikasi Prediksi Penyakit Jantung")
@@ -131,9 +129,9 @@ if uploaded_file is not None:
             # Menambahkan data baru ke session state
             st.session_state.data = pd.concat([st.session_state.data, user_data], ignore_index=True)
             
-            # Menampilkan data setelah penambahan baris baru
+            # Menampilkan data setelah penambahan baris baru dengan scrollable table
             st.write("Data Setelah Input Baru:")
-            st.write(st.session_state.data.tail())  # Menampilkan data terbaru
+            st.dataframe(st.session_state.data, use_container_width=True)  # Menampilkan data terbaru dengan scroll
 
         # Prediksi untuk data baru
         if st.button("Prediksi Penyakit Jantung"):
