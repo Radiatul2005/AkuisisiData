@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt  # Import matplotlib untuk plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
@@ -65,7 +67,46 @@ if uploaded_file is not None:
     # Inisialisasi dan latih model Random Forest
     model = RandomForestClassifier(random_state=42)
     model.fit(X_train, y_train)
+    # Memilih variabel untuk analisis
+    comparison_var = st.selectbox("Pilih Variabel untuk Dibandingkan:", X.columns)
 
+    # Opsi untuk jenis grafik
+    chart_type = st.radio("Pilih Jenis Grafik:", ["Histogram", "Line Plot"])
+
+    if comparison_var in st.session_state.data.columns:
+        plt.figure(figsize=(12, 6))
+
+        if chart_type == "Histogram":
+            # Menampilkan histogram
+            st.session_state.data[comparison_var] = pd.to_numeric(st.session_state.data[comparison_var], errors="coerce")
+            sns.histplot(
+                data=st.session_state.data,
+                x=comparison_var,
+                hue='Heart Disease',
+                kde=True,
+                multiple='stack',
+                bins=20
+            )
+        else:
+            # Menampilkan line plot
+            aggregated_data = (
+                st.session_state.data.groupby([comparison_var, 'Heart Disease'])
+                .size()
+                .reset_index(name='count')
+            )
+            sns.lineplot(
+                data=aggregated_data,
+                x=comparison_var,
+                y='count',
+                hue='Heart Disease',
+                marker='o'
+            )
+
+        plt.title(f"{chart_type} {comparison_var} Berdasarkan Status Penyakit Jantung")
+        plt.xlabel(comparison_var.capitalize())
+        plt.ylabel("Jumlah Pasien")
+        st.pyplot(plt)
+    
     # Formulir untuk input data baru
     st.subheader("Formulir Input Data Baru")
     # Input dari pengguna
